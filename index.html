@@ -189,7 +189,7 @@ function checkAndReturnHome() {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    if (!(hours === 1 && minutes >= 1 && minutes <= 9)) {
+    if (!(hours === 1 && minutes >= 1 && minutes <= 59)) {
       // 如果超过00:05，跳回吸血鬼梦境首页
       window.location.href = "https://dianajiang233.github.io/FarmRidge/"; // 改成你的吸血鬼梦境页面地址
     }
