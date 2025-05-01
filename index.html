@@ -139,9 +139,9 @@ function spawnGif(type) {
   const img = document.createElement('img');
   img.src = gifSources[type] || gifSources.grass;
 
-  const x = Math.random() * window.innerWidth;
-  const y = Math.random() * (window.innerHeight * 0.3) + window.innerHeight * 0.6;
-
+  const x = Math.random() * (window.innerWidth - size);
+const y = Math.random() * (window.innerHeight * 0.3 - size) + window.innerHeight * 0.6;
+  
    let size = 100; // 增大尺寸
   if (type === 'tree' || type === 'magicTree') size = 120;
   img.style.width = `${size}px`;
