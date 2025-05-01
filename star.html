@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>星星连线种花园</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    color: white;
+    font-family: Arial;
+  }
+  #canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #confirm {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    background: #4caf50;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<button id="confirm">确认种植</button>
+<!-- 左下角动图 -->
+<img id="cornerGif" src="https://dianajiang233.github.io/GooseSing/goosewatch.gif" style="
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 200px;
+  height: auto;
+  z-index: 10;
+  pointer-events: none;
+">
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const stars = [];
+const links = [];
+
+// 植物类型与对应图片链接
+const gifSources = {
+  grass: "https://dianajiang233.github.io/GooseSing/grassnormal.gif",
+  flower: "https://dianajiang233.github.io/GooseSing/flower.gif",
+  tree: "https://dianajiang233.github.io/GooseSing/treenormal.gif",
+  magicFlower: "https://dianajiang233.github.io/GooseSing/flowerspecial.gif",
+  magicGrass: "https://dianajiang233.github.io/GooseSing/grassspecial.gif",
+  magicTree: "https://dianajiang233.github.io/GooseSing/treespecial.gif"
+};
+
+// 生成随机星星
+for (let i = 0; i < 50; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height * 0.6,
+  });
+}
+
+let mouseX = -1000;
+let mouseY = -1000;
+
+canvas.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  drawStars();
+});
+
+// 画画布
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 星星
+  for (const star of stars) {
+    const dx = star.x - mouseX;
+    const dy = star.y - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 10) {
+      // 发光星星 ✨
+      const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, 10);
+      gradient.addColorStop(0, 'white');
+      gradient.addColorStop(1, 'rgba(255,255,150,0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // 普通星星
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // 连线
+  ctx.strokeStyle = 'yellow';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < links.length - 1; i++) {
+    ctx.beginPath();
+    ctx.moveTo(links[i].x, links[i].y);
+    ctx.lineTo(links[i+1].x, links[i+1].y);
+    ctx.stroke();
+  }
+}
+
+// 点击星星连线
+canvas.addEventListener('click', (e) => {
+  const clickX = e.clientX;
+  const clickY = e.clientY;
+  for (const star of stars) {
+    const dx = star.x - clickX;
+    const dy = star.y - clickY;
+    if (Math.sqrt(dx*dx + dy*dy) < 10) {
+      links.push(star);
+      drawStars();
+      break;
+    }
+  }
+});
+
+// 生成 gif 植物到随机位置
+function spawnGif(type) {
+  const img = document.createElement('img');
+  img.src = gifSources[type] || gifSources.grass;
+
+  const x = Math.random() * window.innerWidth;
+  const y = Math.random() * (window.innerHeight * 0.3) + window.innerHeight * 0.6;
+
+   let size = 100; // 增大尺寸
+  if (type === 'tree' || type === 'magicTree') size = 120;
+  img.style.width = `${size}px`;
+
+  img.style.position = 'absolute';
+  img.style.left = `${x}px`;
+  img.style.top = `${y}px`;
+  img.style.pointerEvents = 'none';
+  img.style.zIndex = 5;
+
+  document.body.appendChild(img);
+}
+
+// 确认种植按钮
+const confirmBtn = document.getElementById('confirm');
+confirmBtn.addEventListener('click', () => {
+  if (links.length === 0) return;
+
+  const n = links.length;
+  let type = '';
+
+  if (n === 2) type = 'grass';
+  else if (n === 3) type = 'flower';
+  else if (n === 4) type = 'tree';
+  else if (n === 5) type = 'magicFlower';
+  else if (n === 6) type = 'magicGrass';
+  else if (n >= 7) type = 'magicTree';
+
+  if (type) {
+    spawnGif(type);
+  }
+
+  links.length = 0;
+  drawStars();
+});
+
+// 自动适应窗口
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  drawStars();
+});
+
+function checkAndReturnHome() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    if (!(hours === 1 && minutes >= 1 && minutes <= 9)) {
+      // 如果超过00:05，跳回吸血鬼梦境首页
+      window.location.href = "https://dianajiang233.github.io/FarmRidge/"; // 改成你的吸血鬼梦境页面地址
+    }
+  }
+
+  // 检查一次
+  checkAndReturnHome();
+  // 每20秒检查一次
+  setInterval(checkAndReturnHome, 20000);
+
+</script>
+</body>
+</html>
