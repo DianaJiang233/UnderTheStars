@@ -44,6 +44,27 @@
   z-index: 10;
   pointer-events: none;
 ">
+  <div id="goodbyeOverlay" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  color: white;
+  font-size: 40px;
+  font-family: 'Handjet', cursive;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease;
+  z-index: 9999;
+">
+  The goose is going to sleep, and so are you.
+</div>
+
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -186,15 +207,22 @@ window.addEventListener('resize', () => {
 });
 
 function checkAndReturnHome() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
 
-    if (!(hours === 1 && minutes >= 1 && minutes <= 59)) {
-      // 如果超过00:05，跳回吸血鬼梦境首页
-      window.location.href = "https://dianajiang233.github.io/FarmRidge/"; // 改成你的吸血鬼梦境页面地址
-    }
+  if (!(hours === 17 && minutes >= 1 && minutes <= 19)) {
+    const overlay = document.getElementById('goodbyeOverlay');
+    overlay.style.pointerEvents = 'auto';
+    overlay.style.opacity = 1;
+
+    // 5 秒后跳转
+    setTimeout(() => {
+      window.location.href = "https://dianajiang233.github.io/FarmRidge/";
+    }, 5000);
   }
+}
+
 
   // 检查一次
   checkAndReturnHome();
